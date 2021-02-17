@@ -20,6 +20,18 @@
 #define otherLIB(name) name
 #endif //_DEBUG
 
+#if defined(_WIN32)
+    #define WINDOWS_PLATFORM
+#elif defined(_WIN64)
+    #define WINDOWS_PLATFORM
+#elif defined(__CYGWIN__) && !defined(_WIN32)
+    #define WINDOWS_PLATFORM
+#elif defined(__linux__)
+    #define LINUX_PLATFORM
+#else
+    #define NULL_PLATFORM
+#endif
+
 #pragma comment(lib, cvLIB("world"))
 
 bool FileExist(const std::string& filename);

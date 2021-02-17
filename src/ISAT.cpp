@@ -422,7 +422,14 @@ void ISAT::save()
 {
     if (_is_watershed && _init_watershed.id != _watershed.id)
     {        
+    #if defined(LINUX_PLATFORM)
+        std::string save_root = _imgFile.toUtf8().constData();
+    #elif defined(WINDOWS_PLATFORM)
         std::string save_root = _imgFile.toLocal8Bit();
+    #else
+        std::string save_root = _imgFile.toLocal8Bit();
+    #endif
+
         save_root = save_root.substr(0, save_root.find_last_of(".") + 1);
 
         cv::Mat watershed_mask = qImage2Mat(_watershed.id); // 255: edge
@@ -468,7 +475,14 @@ void ISAT::save()
 
 void ISAT::read()
 {
-    std::string save_root = _imgFile.toLocal8Bit();
+    #if defined(LINUX_PLATFORM)
+        std::string save_root = _imgFile.toUtf8().constData();
+    #elif defined(WINDOWS_PLATFORM)
+        std::string save_root = _imgFile.toLocal8Bit();
+    #else
+        std::string save_root = _imgFile.toLocal8Bit();
+    #endif
+
     save_root = save_root.substr(0, save_root.find_last_of(".") + 1);
 
     if (FileExist(save_root+"mask") && FileExist(save_root+"dat") && FileExist(save_root+"txt"))

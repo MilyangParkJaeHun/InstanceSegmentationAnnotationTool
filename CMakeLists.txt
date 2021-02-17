@@ -2,8 +2,11 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(InstanceSegmentationAnnotationTool)
 
-set(QT5_DIR "I:/Develop/3rdparty/Qt/Qt_5.12.9/5.12.9/msvc2017_64/lib/cmake" CACHE STRING "Additional search paths for QT5")
-set(OpenCV_DIR "I:/Develop/3rdparty/OpenCV/opencv-4.2.0/build")
+if(UNIX)
+	set(CMAKE_CXX_STANDARD 17)
+endif()
+set(QT5_DIR "/home/park/Qt5.12.9/5.12.9/gcc_64/lib/cmake" CACHE STRING "Additional search paths for QT5")
+set(OpenCV_DIR "/home/park/opencv/opencv-3.4.6/build")
 
 set(CMAKE_AUTOMOC ON)
 

@@ -174,7 +174,13 @@ void MainWindow::btn_img_dir_clicked()
 
     QString opened_dir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", "./", QFileDialog::ShowDirsOnly);
 
+#if defined(LINUX_PLATFORM)
+    std::string selected_dir = opened_dir.toUtf8().constData();
+#elif defined(WINDOWS_PLATFORM)
     std::string selected_dir = opened_dir.toLocal8Bit();
+#else
+    std::string selected_dir = opened_dir.toLocal8Bit();
+#endif
 	
     std::vector<std::string> total_file_list;
     getFilelistRecursive(selected_dir, total_file_list);
@@ -211,7 +217,15 @@ void MainWindow::btn_img_dir_clicked()
 void MainWindow::btn_set_class_clicked()
 {
     QString opened_file = QFileDialog::getOpenFileName(nullptr, tr("Open LabelList file"), "./", tr("LabelList Files (*.txt *.names)"));
+
+#if defined(LINUX_PLATFORM)
+    std::string selected_file = opened_file.toUtf8().constData();
+#elif defined(WINDOWS_PLATFORM)
     std::string selected_file = opened_file.toLocal8Bit();
+#else
+    std::string selected_file = opened_file.toLocal8Bit();
+#endif
+
     std::vector<std::string> class_names = readNamesFile(selected_file);
 
     if (class_names.size() == 0)

@@ -31,9 +31,15 @@ std::string str2Lower(std::string str)
 int getFilelistRecursive(std::string path, std::vector<std::string>& filelist)
 {
     filelist.clear();
-    for (auto& p : std::experimental::filesystem::recursive_directory_iterator(path))
+#if defined(LINUX_PLATFORM)
+    for (auto& p : std::filesystem::recursive_directory_iterator(path))
         filelist.emplace_back(p.path().string());
-		
+#elif defined(WINDOWS_PLATFORM)
+    for (auto& p : std::experimental::filesystem::recursive_directory_iterator(path))
+#else
+    for (auto& p : std::experimental::filesystem::recursive_directory_iterator(path))
+#endif
+	
     return 0;
 }
 
@@ -68,7 +74,14 @@ std::vector<std::string> readNamesFile(std::string filename)
 
 int openImage(QString img_path, cv::Size& img_size, QImage& image)
 {
+#if defined(LINUX_PLATFORM)
+    std::string path = img_path.toUtf8().constData();
+#elif defined(WINDOWS_PLATFORM)
     std::string path = img_path.toLocal8Bit();
+#else
+    std::string path = img_path.toLocal8Bit();
+#endif
+    
     cv::Mat cv_img = cv::imread(path);
     
     img_size = cv_img.size();
