@@ -46,6 +46,12 @@ private slots:
     void change_visualize_mode();
     void btn_plus_clicked();
     void btn_minus_clicked();
+    void h_lower_slider_changed(int);
+    void h_upper_slider_changed(int);
+    void s_lower_slider_changed(int);
+    void s_upper_slider_changed(int);
+    void v_lower_slider_changed(int);
+    void v_upper_slider_changed(int);
 
     void undo();
     void redo();

@@ -38,6 +38,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBox_drawmode,          SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
     connect(ui->pushButton_plus,            SIGNAL(clicked()),              this,   SLOT(btn_plus_clicked()));
     connect(ui->pushButton_minus,           SIGNAL(clicked()),              this,   SLOT(btn_minus_clicked()));
+    connect(ui->H_lower_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(h_lower_slider_changed(int)));
+    connect(ui->H_upper_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(h_upper_slider_changed(int)));
+    connect(ui->S_lower_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(s_lower_slider_changed(int)));
+    connect(ui->S_upper_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(s_upper_slider_changed(int)));
+    connect(ui->V_lower_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(v_lower_slider_changed(int)));
+    connect(ui->V_upper_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(v_upper_slider_changed(int)));
+
 
     init();
 }
@@ -403,6 +410,48 @@ void MainWindow::btn_minus_clicked()
     update_img();
 
     parent->removeChild(item);
+}
+
+void MainWindow::h_lower_slider_changed(int value)
+{
+    qDebug() << "test!! : " << value;
+    update_img();
+    return;
+}
+
+void MainWindow::h_upper_slider_changed(int value)
+{
+    qDebug() << "test!! : " << value;
+    update_img();
+    return;
+}
+
+void MainWindow::s_lower_slider_changed(int value)
+{
+    qDebug() << "test!! : " << value;
+    update_img();
+    return;
+}
+
+void MainWindow::s_upper_slider_changed(int value)
+{
+    qDebug() << "test!! : " << value;
+    update_img();
+    return;
+}
+
+void MainWindow::v_lower_slider_changed(int value)
+{
+    qDebug() << "test!! : " << value;
+    update_img();
+    return;
+}
+
+void MainWindow::v_upper_slider_changed(int value)
+{
+    qDebug() << "test!! : " << value;
+    update_img();
+    return;
 }
 
 void MainWindow::undo()
