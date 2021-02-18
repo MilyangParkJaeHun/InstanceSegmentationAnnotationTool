@@ -225,8 +225,8 @@ border-color: rgb(208, 206, 206);</string>
    <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>1419</x>
-      <y>11</y>
+      <x>1420</x>
+      <y>12</y>
       <width>323</width>
       <height>961</height>
      </rect>
@@ -533,29 +533,40 @@ border-color: rgb(208, 206, 206);</string>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_7">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <family>Times New Roman</family>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color : rgb(231, 230, 230);color : rgb(0, 0, 0);
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color : rgb(231, 230, 230);color : rgb(0, 0, 0);
 border-color: rgb(208, 206, 206);</string>
-       </property>
-       <property name="text">
-        <string>HSV_filter</string>
-       </property>
-      </widget>
+         </property>
+         <property name="text">
+          <string>HSV_filter</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="hsv_clear_button">
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_12">
@@ -716,7 +727,7 @@ border-color: rgb(208, 206, 206);</string>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_12">
          <item>
-          <widget class="QSlider" name="H_lower_slider_5">
+          <widget class="QSlider" name="h_lower_slider">
            <property name="maximum">
             <number>255</number>
            </property>
@@ -726,30 +737,7 @@ border-color: rgb(208, 206, 206);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="H_upper_slider_5">
-           <property name="maximum">
-            <number>255</number>
-           </property>
-           <property name="value">
-            <number>255</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="S_lower_slider_5">
-           <property name="maximum">
-            <number>255</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="S_upper_slider_5">
+          <widget class="QSlider" name="h_upper_slider">
            <property name="maximum">
             <number>255</number>
            </property>
@@ -762,7 +750,7 @@ border-color: rgb(208, 206, 206);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="V_lower_slider_5">
+          <widget class="QSlider" name="s_lower_slider">
            <property name="maximum">
             <number>255</number>
            </property>
@@ -772,7 +760,30 @@ border-color: rgb(208, 206, 206);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="V_upper_slider_5">
+          <widget class="QSlider" name="s_upper_slider">
+           <property name="maximum">
+            <number>255</number>
+           </property>
+           <property name="value">
+            <number>255</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="v_lower_slider">
+           <property name="maximum">
+            <number>255</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="v_upper_slider">
            <property name="maximum">
             <number>255</number>
            </property>

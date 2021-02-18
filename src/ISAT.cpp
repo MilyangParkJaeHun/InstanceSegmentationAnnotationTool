@@ -74,6 +74,13 @@ ISAT::ISAT(QWidget *parent)
     _display_watershed_mask = true;
     _draw_manual_mask = false;
 
+    _hsv_filter["H_lower"] = 0;
+    _hsv_filter["H_upper"] = 255;
+    _hsv_filter["S_lower"] = 0;
+    _hsv_filter["S_upper"] = 255;
+    _hsv_filter["V_lower"] = 0;
+    _hsv_filter["V_upper"] = 255;
+
     _effective_id.clear();
     _id_storage.clear();
 }
@@ -527,4 +534,22 @@ void ISAT::read()
 
         update_mask();
     }
+}
+
+void ISAT::update_hsv_filter()
+{
+    if (_effective_id.size() == 0)
+        return;
+
+    cv::Mat hsv_display, hsv_filter, filtered_display;
+    cv::Mat inputImg_display = qImage2Mat(_inputImg);
+    cv::cvtColor(inputImg_display, hsv_display, cv::COLOR_BGR2HSV);
+
+    cv::Scalar low_hsv = cv::Scalar(_hsv_filter["H_lower"], _hsv_filter["S_lower"], _hsv_filter["V_lower"]);
+    cv::Scalar up_hsv = cv::Scalar(_hsv_filter["H_upper"], _hsv_filter["S_upper"], _hsv_filter["V_upper"]);
+
+    cv::inRange(hsv_display, low_hsv, up_hsv, hsv_filter);
+    cv::bitwise_and(inputImg_display, inputImg_display, filtered_display, hsv_filter);
+
+    _inputImg_display = mat2QImage(filtered_display);
 }

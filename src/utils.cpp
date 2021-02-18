@@ -192,3 +192,9 @@ QImage watershed(const QImage& qimage, const QImage& qmarkers_mask)
 
     return mat2QImage(new_mask);
 }
+
+// std::map<std::string, int>::iterator i;
+// for(i=canvas._hsv_filter.begin(); i!=canvas._hsv_filter.end(); i++)
+// {
+//     std::cout << i->second << std::endl;
+// }

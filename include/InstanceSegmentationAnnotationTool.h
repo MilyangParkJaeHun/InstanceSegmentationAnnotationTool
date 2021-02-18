@@ -46,6 +46,7 @@ private slots:
     void change_visualize_mode();
     void btn_plus_clicked();
     void btn_minus_clicked();
+    void hsv_clear_clicked();
     void h_lower_slider_changed(int);
     void h_upper_slider_changed(int);
     void s_lower_slider_changed(int);
@@ -63,6 +64,8 @@ private:
     void update_id();
     void move_img();
     void update_img();
+    void hsv_filter_changed();
+    int get_current_id();
     
     Ui::MainWindow  *ui;
     init_param      init_parameter;

@@ -1,6 +1,7 @@
 #pragma once
 #include <QLabel>
 #include <QPainter>
+#include <map>
 #include "utils.h"
 
 struct ColorMask
@@ -56,6 +57,8 @@ public:
     int                     _undo_idx;
     std::vector<ImageMask>  _undo_mask;
     std::vector<ImageMask>  _undo_watershed;
+
+    std::map<std::string, int> _hsv_filter;
     
     void readImage();
     bool checkDuplication(int id, QColor color);
@@ -70,4 +73,5 @@ public:
     void idToColor(ImageMask& mask);
     void save();
     void read();
+    void update_hsv_filter();
 };

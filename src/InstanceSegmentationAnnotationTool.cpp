@@ -38,12 +38,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBox_drawmode,          SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
     connect(ui->pushButton_plus,            SIGNAL(clicked()),              this,   SLOT(btn_plus_clicked()));
     connect(ui->pushButton_minus,           SIGNAL(clicked()),              this,   SLOT(btn_minus_clicked()));
-    connect(ui->H_lower_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(h_lower_slider_changed(int)));
-    connect(ui->H_upper_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(h_upper_slider_changed(int)));
-    connect(ui->S_lower_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(s_lower_slider_changed(int)));
-    connect(ui->S_upper_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(s_upper_slider_changed(int)));
-    connect(ui->V_lower_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(v_lower_slider_changed(int)));
-    connect(ui->V_upper_slider_5,             SIGNAL(valueChanged(int)),      this,   SLOT(v_upper_slider_changed(int)));
+    connect(ui->hsv_clear_button,           SIGNAL(clicked()),              this,   SLOT(hsv_clear_clicked()));
+    connect(ui->h_lower_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(h_lower_slider_changed(int)));
+    connect(ui->h_upper_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(h_upper_slider_changed(int)));
+    connect(ui->s_lower_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(s_lower_slider_changed(int)));
+    connect(ui->s_upper_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(s_upper_slider_changed(int)));
+    connect(ui->v_lower_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(v_lower_slider_changed(int)));
+    connect(ui->v_upper_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(v_upper_slider_changed(int)));
 
 
     init();
@@ -412,46 +413,92 @@ void MainWindow::btn_minus_clicked()
     parent->removeChild(item);
 }
 
+void MainWindow::hsv_clear_clicked()
+{
+    ui->h_lower_slider->setValue(0);
+    ui->h_upper_slider->setValue(255);
+    ui->s_lower_slider->setValue(0);
+    ui->s_upper_slider->setValue(255);
+    ui->v_lower_slider->setValue(0);
+    ui->v_upper_slider->setValue(255);
+}
+
+int MainWindow::get_current_id()
+{
+    QString class_name = "";
+    if (ui->treeWidget_class->currentItem()->parent() == NULL)
+    {
+        if (ui->treeWidget_class->currentItem()->text(0) != "Background")
+            return 0;
+        else
+            class_name = "Background";
+    }
+
+    if (class_name == "")
+        class_name = ui->treeWidget_class->currentItem()->parent()->text(0);
+
+    int id;
+    if (ui->treeWidget_class->currentItem()->text(3) == "")
+    {
+        QColor color;
+        canvas.createID(id,color,class_name);
+
+        ui->treeWidget_class->currentItem()->setBackground(2, color);
+        ui->treeWidget_class->currentItem()->setText(3, QString::number(id));
+    }
+    else
+        id = ui->treeWidget_class->currentItem()->text(3).toInt();
+
+    canvas.changeID(id);
+
+    std::vector<int>::iterator it = std::find(canvas._effective_id.begin(), canvas._effective_id.end(), id);
+    if (it == canvas._effective_id.end())
+        canvas._effective_id.emplace_back(id);
+    return id;
+}
+
+void MainWindow::hsv_filter_changed()
+{
+    get_current_id();
+    canvas.update_hsv_filter();
+
+    update_img();
+}
+
 void MainWindow::h_lower_slider_changed(int value)
 {
-    qDebug() << "test!! : " << value;
-    update_img();
-    return;
+    canvas._hsv_filter["H_lower"] = value;
+    hsv_filter_changed();
 }
 
 void MainWindow::h_upper_slider_changed(int value)
 {
-    qDebug() << "test!! : " << value;
-    update_img();
-    return;
+    canvas._hsv_filter["H_upper"] = value;
+    hsv_filter_changed();
 }
 
 void MainWindow::s_lower_slider_changed(int value)
 {
-    qDebug() << "test!! : " << value;
-    update_img();
-    return;
+    canvas._hsv_filter["S_lower"] = value;
+    hsv_filter_changed();
 }
 
 void MainWindow::s_upper_slider_changed(int value)
 {
-    qDebug() << "test!! : " << value;
-    update_img();
-    return;
+    canvas._hsv_filter["S_upper"] = value;
+    hsv_filter_changed();
 }
 
 void MainWindow::v_lower_slider_changed(int value)
 {
-    qDebug() << "test!! : " << value;
-    update_img();
-    return;
+    canvas._hsv_filter["V_lower"] = value;
+    hsv_filter_changed();
 }
 
 void MainWindow::v_upper_slider_changed(int value)
 {
-    qDebug() << "test!! : " << value;
-    update_img();
-    return;
+    canvas._hsv_filter["V_upper"] = value;
+    hsv_filter_changed();
 }
 
 void MainWindow::undo()
