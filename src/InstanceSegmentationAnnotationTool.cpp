@@ -178,24 +178,31 @@ void MainWindow::btn_save_clicked()
 
 void MainWindow::btn_img_dir_clicked()
 {
-    init_parameter.is_set_dir = false;
-    init_parameter.is_init = false;
+    std::string selected_dir;
+    if(!init_parameter.is_first_set_dir)
+    {
+        QString opened_dir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", "./", QFileDialog::ShowDirsOnly);
 
-    QString opened_dir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", "./", QFileDialog::ShowDirsOnly);
-
-#if defined(LINUX_PLATFORM)
-    std::string selected_dir = opened_dir.toUtf8().constData();
-#elif defined(WINDOWS_PLATFORM)
-    std::string selected_dir = opened_dir.toLocal8Bit();
-#else
-    std::string selected_dir = opened_dir.toLocal8Bit();
-#endif
+    #if defined(LINUX_PLATFORM)
+        selected_dir = opened_dir.toUtf8().constData();
+    #elif defined(WINDOWS_PLATFORM)
+        selected_dir = opened_dir.toLocal8Bit();
+    #else
+        selected_dir = opened_dir.toLocal8Bit();
+    #endif
+        file_write(_img_dir_config_file, selected_dir);
+    }
+    else
+    {
+        selected_dir = _img_dir_path;
+    }
 	
     std::vector<std::string> total_file_list;
     getFilelistRecursive(selected_dir, total_file_list);
 
     std::vector<std::string> img_file_list;
     getImgFilelist(total_file_list, img_file_list);
+    sort(img_file_list.begin(), img_file_list.end(), compareFileName);
 
     if (img_file_list.size() == 0) 
     {
@@ -225,15 +232,24 @@ void MainWindow::btn_img_dir_clicked()
 
 void MainWindow::btn_set_class_clicked()
 {
-    QString opened_file = QFileDialog::getOpenFileName(nullptr, tr("Open LabelList file"), "./", tr("LabelList Files (*.txt *.names)"));
+    std::string selected_file;
+    if(!init_parameter.is_first_set_class)
+    {
+        QString opened_file = QFileDialog::getOpenFileName(nullptr, tr("Open LabelList file"), "./", tr("LabelList Files (*.txt *.names)"));
 
-#if defined(LINUX_PLATFORM)
-    std::string selected_file = opened_file.toUtf8().constData();
-#elif defined(WINDOWS_PLATFORM)
-    std::string selected_file = opened_file.toLocal8Bit();
-#else
-    std::string selected_file = opened_file.toLocal8Bit();
-#endif
+    #if defined(LINUX_PLATFORM)
+        selected_file = opened_file.toUtf8().constData();
+    #elif defined(WINDOWS_PLATFORM)
+        selected_file = opened_file.toLocal8Bit();
+    #else
+        selected_file = opened_file.toLocal8Bit();
+    #endif
+        file_write(_class_config_file, selected_file);
+    }
+    else
+    {
+        selected_file = _class_file_path;
+    }
 
     std::vector<std::string> class_names = readNamesFile(selected_file);
 
@@ -491,36 +507,13 @@ void MainWindow::hsv_set_clicked()
 void MainWindow::hsv_load_clicked()
 {
     std::map<std::string, int> hsv = canvas.load_hsv(get_class_name());
-    // int h_lower = hsv["H_lower"];
-    // int h_upper = hsv["H_upper"];
-    // int s_lower = hsv["S_lower"];
-    // int s_upper = hsv["S_upper"];
-    // int v_lower = hsv["V_lower"];
-    // int v_upper = hsv["V_upper"];
 
-    // int before_h_lower = ui->h_lower_slider->getValue();
-    // int before_h_upper = ui->h_upper_slider->getValue();
-    // int before_s_lower = ui->s_lower_slider->getValue();
-    // int before_s_upper = ui->s_upper_slider->getValue();
-    // int before_v_lower = ui->v_lower_slider->getValue();
-    // int before_v_upper = ui->v_upper_slider->getValue();
-
-    // if(h_lower == before_h_lower && h_upper == before_h_upper && \
-    //                                 s_lower == before_s_lower && \
-    //                                 s_upper == before_s_upper && \
-    //                                 v_lower == before_v_lower && \
-    //                                 v_upper == before_v_upper){
-    //     hsv_filter_changed()
-    // }
-    // else
-    // {
     ui->h_lower_slider->setValue(hsv["H_lower"]);
     ui->h_upper_slider->setValue(hsv["H_upper"]);
     ui->s_lower_slider->setValue(hsv["S_lower"]);
     ui->s_upper_slider->setValue(hsv["S_upper"]);
     ui->v_lower_slider->setValue(hsv["V_lower"]);
     ui->v_upper_slider->setValue(hsv["V_upper"]);
-    // }
 }
 
 void MainWindow::hsv_filter_changed()
@@ -620,6 +613,8 @@ void MainWindow::init()
     init_parameter.is_set_dir = false;
     init_parameter.is_set_class = false;
     init_parameter.is_init = false;
+    init_parameter.is_first_set_dir = true;
+    init_parameter.is_first_set_class = true;
 
     QStringList column_name;
     column_name << "Class" << "No" << "Color" << "";
@@ -640,6 +635,19 @@ void MainWindow::init()
 
     QImage logo = QImage(":/logo2");
     ui->label_img_display->setPixmap(QPixmap::fromImage(logo));
+
+    _class_file_path = file_read(_class_config_file);
+    _img_dir_path = file_read(_img_dir_config_file);
+    if(_class_file_path != "")
+    {
+        btn_set_class_clicked();
+        init_parameter.is_first_set_class = false;
+    }
+    if(_img_dir_path != "")
+    {
+        btn_img_dir_clicked();
+        init_parameter.is_first_set_dir = false;
+    }
 }
 
 void MainWindow::check_is_init()

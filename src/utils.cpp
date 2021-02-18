@@ -193,8 +193,53 @@ QImage watershed(const QImage& qimage, const QImage& qmarkers_mask)
     return mat2QImage(new_mask);
 }
 
-// std::map<std::string, int>::iterator i;
-// for(i=canvas._hsv_filter.begin(); i!=canvas._hsv_filter.end(); i++)
-// {
-//     std::cout << i->second << std::endl;
-// }
+void file_write(std::string file_path, std::string line)
+{
+    std::ofstream writeFile(file_path.data());
+    if(writeFile.is_open())
+    {
+        writeFile << line;
+    }
+    writeFile.close();
+}
+
+std::string file_read(std::string file_path)
+{
+    std::cout << file_path << std::endl;
+    if(access(file_path.data(), F_OK) == -1)
+    {
+        std::cout << "test" << std::endl;
+        return "";
+    }
+    std::string line;
+    std::ifstream openFile(file_path.data());
+    if(openFile.is_open())
+    {
+        getline(openFile, line);
+    }
+    openFile.close();
+
+    return line;
+}
+
+std::vector<std::string> split(std::string input, char delimiter) {
+    std::vector<std::string> splited_s;
+    std::stringstream ss(input);
+    std::string temp;
+ 
+    while (getline(ss, temp, delimiter)) {
+        splited_s.push_back(temp);
+    }
+ 
+    return splited_s;
+}
+
+bool compareFileName(std::string a, std::string b)
+{
+    std::string a_file_name = *(split(a, '/').end()-1);
+    std::string b_file_name = *(split(b, '/').end()-1);
+    int a_file_num = std::stoi(split(a_file_name, '.')[0]);
+    int b_file_num = std::stoi(split(b_file_name, '.')[0]);
+    if(a_file_num < b_file_num) return true;
+    else return false;
+}

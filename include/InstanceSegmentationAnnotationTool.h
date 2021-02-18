@@ -15,6 +15,8 @@ struct init_param {
     bool is_set_dir;
     bool is_set_class;
     bool is_init;
+    bool is_first_set_class;
+    bool is_first_set_dir;
 };
 
 namespace Ui {
@@ -79,4 +81,10 @@ protected:
     void mousePressEvent(QMouseEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
+
+public:
+    std::string _class_file_path;
+    std::string _img_dir_path;
+    std::string _class_config_file = "/home/park/dev/ROBOCUP/robocup2021/InstanceSegmentationAnnotationTool/config/class_file_path.txt";
+    std::string _img_dir_config_file = "/home/park/dev/ROBOCUP/robocup2021/InstanceSegmentationAnnotationTool/config/img_dir_path.txt";
 };

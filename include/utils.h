@@ -1,9 +1,12 @@
 #pragma once
 #include <fstream>
+#include <sstream>
 #include <io.h>
 #include <algorithm>
 #include <filesystem>
 #include <random>
+#include <string>
+#include <unistd.h>
 
 #include <QImage>
 
@@ -48,3 +51,7 @@ cv::Mat qImage2Mat(QImage const& src);
 cv::Mat convertMat32StoRGBC3(const cv::Mat& mat);
 int getRandomColor(QColor& rgb);
 QImage watershed(const QImage& qimage, const QImage& qmarkers_mask);
+
+void file_write(std::string file_path, std::string line);
+std::string file_read(std::string file_path);
+bool compareFileName(std::string a, std::string b);
