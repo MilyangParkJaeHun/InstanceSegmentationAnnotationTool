@@ -38,14 +38,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBox_drawmode,          SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
     connect(ui->pushButton_plus,            SIGNAL(clicked()),              this,   SLOT(btn_plus_clicked()));
     connect(ui->pushButton_minus,           SIGNAL(clicked()),              this,   SLOT(btn_minus_clicked()));
-    connect(ui->hsv_clear_button,           SIGNAL(clicked()),              this,   SLOT(hsv_clear_clicked()));
-    connect(ui->h_lower_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(h_lower_slider_changed(int)));
-    connect(ui->h_upper_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(h_upper_slider_changed(int)));
-    connect(ui->s_lower_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(s_lower_slider_changed(int)));
-    connect(ui->s_upper_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(s_upper_slider_changed(int)));
-    connect(ui->v_lower_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(v_lower_slider_changed(int)));
-    connect(ui->v_upper_slider,           SIGNAL(valueChanged(int)),      this,   SLOT(v_upper_slider_changed(int)));
-
+    connect(ui->hsv_set_button,             SIGNAL(clicked()),              this,   SLOT(hsv_set_clicked()));
+    connect(ui->hsv_load_button,            SIGNAL(clicked()),              this,   SLOT(hsv_load_clicked()));
+    connect(ui->h_lower_slider,             SIGNAL(valueChanged(int)),      this,   SLOT(h_lower_slider_changed(int)));
+    connect(ui->h_upper_slider,             SIGNAL(valueChanged(int)),      this,   SLOT(h_upper_slider_changed(int)));
+    connect(ui->s_lower_slider,             SIGNAL(valueChanged(int)),      this,   SLOT(s_lower_slider_changed(int)));
+    connect(ui->s_upper_slider,             SIGNAL(valueChanged(int)),      this,   SLOT(s_upper_slider_changed(int)));
+    connect(ui->v_lower_slider,             SIGNAL(valueChanged(int)),      this,   SLOT(v_lower_slider_changed(int)));
+    connect(ui->v_upper_slider,             SIGNAL(valueChanged(int)),      this,   SLOT(v_upper_slider_changed(int)));
 
     init();
 }
@@ -54,6 +54,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 void MainWindow::btn_prev_clicked()
 {
@@ -413,16 +414,6 @@ void MainWindow::btn_minus_clicked()
     parent->removeChild(item);
 }
 
-void MainWindow::hsv_clear_clicked()
-{
-    ui->h_lower_slider->setValue(0);
-    ui->h_upper_slider->setValue(255);
-    ui->s_lower_slider->setValue(0);
-    ui->s_upper_slider->setValue(255);
-    ui->v_lower_slider->setValue(0);
-    ui->v_upper_slider->setValue(255);
-}
-
 int MainWindow::get_current_id()
 {
     QString class_name = "";
@@ -455,6 +446,81 @@ int MainWindow::get_current_id()
     if (it == canvas._effective_id.end())
         canvas._effective_id.emplace_back(id);
     return id;
+}
+
+std::string MainWindow::get_class_name()
+{
+    QTreeWidgetItem *item = ui->treeWidget_class->currentItem();
+    if(item == NULL){
+        return "";
+    }
+    std::string class_name;
+
+    QTreeWidgetItem *parent = item;
+    if(parent->parent() == NULL)
+    {
+    #if defined(LINUX_PLATFORM)
+        class_name = parent->text(0).toUtf8().constData();
+    #elif defined(WINDOWS_PLATFORM)
+        class_name = parent->text(0).toLocal8Bit();
+    #else
+        class_name = parent->text(0).toLocal8Bit();
+    #endif
+    }
+    else
+    {
+    #if defined(LINUX_PLATFORM)
+        class_name = parent->parent()->text(0).toUtf8().constData();
+    #elif defined(WINDOWS_PLATFORM)
+        class_name = parent->parent()->text(0).toLocal8Bit();
+    #else
+        class_name = parent->parent()->text(0).toLocal8Bit();
+    #endif     
+    }
+    return class_name;
+}
+
+void MainWindow::hsv_set_clicked()
+{
+    canvas.resetImage();
+    canvas.draw_hsv_mask();
+    canvas.save_hsv(get_class_name());
+    update_img();
+}
+
+void MainWindow::hsv_load_clicked()
+{
+    std::map<std::string, int> hsv = canvas.load_hsv(get_class_name());
+    // int h_lower = hsv["H_lower"];
+    // int h_upper = hsv["H_upper"];
+    // int s_lower = hsv["S_lower"];
+    // int s_upper = hsv["S_upper"];
+    // int v_lower = hsv["V_lower"];
+    // int v_upper = hsv["V_upper"];
+
+    // int before_h_lower = ui->h_lower_slider->getValue();
+    // int before_h_upper = ui->h_upper_slider->getValue();
+    // int before_s_lower = ui->s_lower_slider->getValue();
+    // int before_s_upper = ui->s_upper_slider->getValue();
+    // int before_v_lower = ui->v_lower_slider->getValue();
+    // int before_v_upper = ui->v_upper_slider->getValue();
+
+    // if(h_lower == before_h_lower && h_upper == before_h_upper && \
+    //                                 s_lower == before_s_lower && \
+    //                                 s_upper == before_s_upper && \
+    //                                 v_lower == before_v_lower && \
+    //                                 v_upper == before_v_upper){
+    //     hsv_filter_changed()
+    // }
+    // else
+    // {
+    ui->h_lower_slider->setValue(hsv["H_lower"]);
+    ui->h_upper_slider->setValue(hsv["H_upper"]);
+    ui->s_lower_slider->setValue(hsv["S_lower"]);
+    ui->s_upper_slider->setValue(hsv["S_upper"]);
+    ui->v_lower_slider->setValue(hsv["V_lower"]);
+    ui->v_upper_slider->setValue(hsv["V_upper"]);
+    // }
 }
 
 void MainWindow::hsv_filter_changed()
@@ -676,6 +742,7 @@ void MainWindow::move_img()
     ui->label_progress->setText(QString::number(canvas._imgIndex + 1) + " / " + QString::number(canvas._imgList.size()));
 
     canvas.readImage();
+    canvas.clear_hsv();
     update_id();
 
     ui->label_img_display->setPixmap(QPixmap::fromImage(canvas._inputImg_display));

@@ -46,6 +46,26 @@ void ImageMask::drawPixel(int x, int y, ColorMask cm, QImage& image)
     image.setPixelColor(x, y, cm.color);
 }
 
+void ImageMask::drawHSVFilter(cv::Mat filter, ColorMask cm, QImage& image)
+{
+    int cols = filter.cols;
+    int rows = filter.rows;
+    uchar* filter_data = filter.data;
+    for(int y=0; y<rows; y++)
+    {
+        for(int x=0; x<cols; x++)
+        {
+            int value = static_cast<int>(filter_data[y * cols + x]);
+            if(value != 0)
+            {
+                id.setPixelColor(x, y, cm.id);
+                color.setPixelColor(x, y, cm.color);
+                image.setPixelColor(x, y, cm.color);
+            }
+        }
+    }
+}
+
 ISAT::ISAT(QWidget *parent)
     :QLabel(parent)
 {
@@ -74,12 +94,13 @@ ISAT::ISAT(QWidget *parent)
     _display_watershed_mask = true;
     _draw_manual_mask = false;
 
-    _hsv_filter["H_lower"] = 0;
-    _hsv_filter["H_upper"] = 255;
-    _hsv_filter["S_lower"] = 0;
-    _hsv_filter["S_upper"] = 255;
-    _hsv_filter["V_lower"] = 0;
-    _hsv_filter["V_upper"] = 255;
+    _default_hsv["H_lower"] = 0;
+    _default_hsv["H_upper"] = 255;
+    _default_hsv["S_lower"] = 0;
+    _default_hsv["S_upper"] = 255;
+    _default_hsv["V_lower"] = 0;
+    _default_hsv["V_upper"] = 255;
+    _hsv_filter = _default_hsv;
 
     _effective_id.clear();
     _id_storage.clear();
@@ -536,20 +557,80 @@ void ISAT::read()
     }
 }
 
-void ISAT::update_hsv_filter()
+cv::Mat ISAT::get_hsv_filter(cv::Mat origin_display)
 {
-    if (_effective_id.size() == 0)
-        return;
-
-    cv::Mat hsv_display, hsv_filter, filtered_display;
-    cv::Mat inputImg_display = qImage2Mat(_inputImg);
-    cv::cvtColor(inputImg_display, hsv_display, cv::COLOR_BGR2HSV);
+    cv::Mat hsv_display, hsv_filter;
+    cv::cvtColor(origin_display, hsv_display, cv::COLOR_BGR2HSV);
 
     cv::Scalar low_hsv = cv::Scalar(_hsv_filter["H_lower"], _hsv_filter["S_lower"], _hsv_filter["V_lower"]);
     cv::Scalar up_hsv = cv::Scalar(_hsv_filter["H_upper"], _hsv_filter["S_upper"], _hsv_filter["V_upper"]);
 
     cv::inRange(hsv_display, low_hsv, up_hsv, hsv_filter);
-    cv::bitwise_and(inputImg_display, inputImg_display, filtered_display, hsv_filter);
+
+    return hsv_filter;
+}
+
+void ISAT::update_hsv_filter()
+{
+    if (_effective_id.size() == 0)
+        return;
+    
+    cv::Mat inputImg = qImage2Mat(_inputImg);
+    cv::Mat hsv_filter = get_hsv_filter(inputImg);
+    cv::Mat filtered_display;
+
+    cv::bitwise_and(inputImg, inputImg, filtered_display, hsv_filter);
 
     _inputImg_display = mat2QImage(filtered_display);
+}
+
+void ISAT::draw_hsv_mask()
+{
+    if (_effective_id.size() == 0)
+        return;
+
+    cv::Mat inputImg = qImage2Mat(_inputImg);
+    cv::Mat hsv_filter = get_hsv_filter(inputImg);
+
+    if (_color.class_name == "Background")
+    {
+        if (_draw_manual_mask)
+            _color.id = QColor(0, 0, 0);
+        else
+            _color.id = QColor(255, 255, 255);
+    }
+
+    if (!_draw_manual_mask)
+    {
+        _mask.drawHSVFilter(hsv_filter, _color, _inputImg_display);
+    }
+    else
+    {
+        _watershed.drawHSVFilter(hsv_filter, _color, _inputImg_display);
+    }
+    update_mask();
+}
+
+void ISAT::resetImage()
+{
+    _inputImg_display = _inputImg.copy();
+}
+
+std::map<std::string, int> ISAT::load_hsv(std::string class_name)
+{
+    if(_hsv_storage.find(class_name) == _hsv_storage.end())
+    {
+        _hsv_storage[class_name] = _default_hsv;
+    }
+    return _hsv_storage[class_name];
+}
+
+void ISAT::save_hsv(std::string class_name)
+{
+    _hsv_storage[class_name] = _hsv_filter;
+}
+
+void ISAT::clear_hsv()
+{
+    _hsv_filter = _default_hsv;
 }

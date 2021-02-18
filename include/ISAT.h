@@ -21,6 +21,7 @@ struct ImageMask
 
     void drawFillCircle(int x, int y, int pen_size, ColorMask cm, QImage& image);
     void drawPixel(int x, int y, ColorMask cm, QImage& image);
+    void drawHSVFilter(cv::Mat filter, ColorMask cm, QImage& image);
 };
 
 class ISAT : public QLabel
@@ -59,6 +60,8 @@ public:
     std::vector<ImageMask>  _undo_watershed;
 
     std::map<std::string, int> _hsv_filter;
+    std::map<std::string, int> _default_hsv;
+    std::map<std::string, std::map<std::string, int> > _hsv_storage;
     
     void readImage();
     bool checkDuplication(int id, QColor color);
@@ -73,5 +76,11 @@ public:
     void idToColor(ImageMask& mask);
     void save();
     void read();
+    cv::Mat get_hsv_filter(cv::Mat origin_display);
     void update_hsv_filter();
+    void draw_hsv_mask();
+    void resetImage();
+    std::map<std::string, int> load_hsv(std::string class_name);
+    void save_hsv(std::string class_name);
+    void clear_hsv();
 };
