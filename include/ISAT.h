@@ -62,6 +62,9 @@ public:
     std::map<std::string, int> _hsv_filter;
     std::map<std::string, int> _default_hsv;
     std::map<std::string, std::map<std::string, int> > _hsv_storage;
+
+    int _mouse_offset_x;
+    int _mouse_offset_y;
     
     void readImage();
     bool checkDuplication(int id, QColor color);
@@ -71,6 +74,8 @@ public:
     void changeBackgroundID();
     void checkID();
     void draw(QMouseEvent *e, QRect size);
+    void run_bfs(int y, int x, cv::Mat id_mat, ColorMask cm);
+    void fill_color(QRect size);
     void update_mask();
     void run_watershed();
     void idToColor(ImageMask& mask);

@@ -17,6 +17,7 @@ struct init_param {
     bool is_init;
     bool is_first_set_class;
     bool is_first_set_dir;
+    bool is_fill_color_mode;
 };
 
 namespace Ui {
@@ -46,6 +47,7 @@ private slots:
     void change_manual();
     void change_watershed();
     void change_visualize_mode();
+    void change_fill_color_mode();
     void btn_plus_clicked();
     void btn_minus_clicked();
     void hsv_set_clicked();

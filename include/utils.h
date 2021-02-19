@@ -7,6 +7,8 @@
 #include <random>
 #include <string>
 #include <unistd.h>
+#include <queue>
+#include <vector>
 
 #include <QImage>
 

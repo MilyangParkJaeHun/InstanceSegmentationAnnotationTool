@@ -102,6 +102,9 @@ ISAT::ISAT(QWidget *parent)
     _default_hsv["V_upper"] = 255;
     _hsv_filter = _default_hsv;
 
+    _mouse_offset_x = 2;
+    _mouse_offset_y = 4;
+
     _effective_id.clear();
     _id_storage.clear();
 }
@@ -258,8 +261,8 @@ void ISAT::draw(QMouseEvent *e, QRect size)
             _color.id = QColor(255, 255, 255);
     }
 
-    int mouse_pos_x = std::max(0, _mouse_pos.x() - size.x() - (size.width() - _inputImg.width()) / 2);
-    int mouse_pos_y = std::max(0, _mouse_pos.y() - size.y() - (size.height() - _inputImg.height()) / 2 - 13);
+    int mouse_pos_x = std::max(0, _mouse_pos.x() - size.x() - (size.width() - _inputImg.width()) / 2 - _mouse_offset_x);
+    int mouse_pos_y = std::max(0, _mouse_pos.y() - size.y() - (size.height() - _inputImg.height()) / 2 - 13 - _mouse_offset_y);
 
     if (!_draw_manual_mask)
     {
@@ -292,6 +295,66 @@ void ISAT::draw(QMouseEvent *e, QRect size)
         }
         update_mask();
     }
+}
+
+void ISAT::run_bfs(int y, int x, cv::Mat id_mat, ColorMask cm)
+{
+    std::cout << "run_bfs" << std::endl;
+    std::queue<std::pair<int, int> > q;
+    int img_width = _inputImg_size.width;
+    int img_height = _inputImg_size.height;
+    int target_id = static_cast<int>(cm.id.red());
+    std::vector<bool> check_mat(img_width * img_height, 0);
+    int dir[8][2] = {{-1,0},{1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+
+    q.push(std::make_pair(y, x));
+    while(!q.empty())
+    {
+        std::pair<int, int> now = q.front();
+        q.pop();
+        int now_y = now.first;
+        int now_x = now.second;
+
+        int point_id = static_cast<int>(id_mat.at<cv::Vec3b>(now_y, now_x)[0]);
+        if(point_id != 0 && point_id != target_id)
+            continue;
+        
+        if(check_mat[now_y * img_width + now_x])
+            continue;
+        check_mat[now_y * img_width + now_x] = true;
+        
+        if(!_draw_manual_mask)
+            _mask.drawPixel(now_x, now_y, cm, _inputImg_display);
+        else
+            _watershed.drawPixel(now_x, now_y, cm, _inputImg_display);
+
+        for(int i=0; i<8; i++)
+        {
+            int next_y = now_y + dir[i][0];
+            int next_x = now_x + dir[i][1];
+            if(next_y < 0 || next_y >= img_height || next_x < 0 || next_x >= img_width)
+                continue;
+
+            q.push(std::make_pair(next_y, next_x));
+        }
+    }
+}
+
+void ISAT::fill_color(QRect size)
+{
+    if (_color.class_name == "Background")
+    {
+        if (_draw_manual_mask)
+            _color.id = QColor(0, 0, 0);
+        else
+            _color.id = QColor(255, 255, 255);
+    }
+
+    int mouse_pos_x = std::max(0, _mouse_pos.x() - size.x() - (size.width() - _inputImg.width()) / 2 - _mouse_offset_x);
+    int mouse_pos_y = std::max(0, _mouse_pos.y() - size.y() - (size.height() - _inputImg.height()) / 2 - 13 - _mouse_offset_y);
+
+    cv::Mat id_mat = qImage2Mat(_mask.id);
+    run_bfs(mouse_pos_y, mouse_pos_x, id_mat, _color);
 }
 
 void ISAT::update_mask()

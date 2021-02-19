@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBox_manual_mask,       SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
     connect(ui->checkBox_watershed_mask,    SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
     connect(ui->checkBox_drawmode,          SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
+    connect(ui->checkBox_fill_color_mode,   SIGNAL(clicked()),              this,   SLOT(change_fill_color_mode()));
     connect(ui->pushButton_plus,            SIGNAL(clicked()),              this,   SLOT(btn_plus_clicked()));
     connect(ui->pushButton_minus,           SIGNAL(clicked()),              this,   SLOT(btn_minus_clicked()));
     connect(ui->hsv_set_button,             SIGNAL(clicked()),              this,   SLOT(hsv_set_clicked()));
@@ -181,6 +182,7 @@ void MainWindow::btn_img_dir_clicked()
     std::string selected_dir;
     if(!init_parameter.is_first_set_dir)
     {
+        std::cout << "test" << std::endl;
         QString opened_dir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", "./", QFileDialog::ShowDirsOnly);
 
     #if defined(LINUX_PLATFORM)
@@ -329,6 +331,14 @@ void  MainWindow::change_visualize_mode()
 
     canvas.update_mask();
     update_img();
+}
+
+void MainWindow::change_fill_color_mode()
+{
+    if(ui->checkBox_fill_color_mode->isChecked())
+        init_parameter.is_fill_color_mode = true;
+    else
+        init_parameter.is_fill_color_mode = false;
 }
 
 void MainWindow::btn_plus_clicked()
@@ -615,6 +625,7 @@ void MainWindow::init()
     init_parameter.is_init = false;
     init_parameter.is_first_set_dir = true;
     init_parameter.is_first_set_class = true;
+    init_parameter.is_fill_color_mode = false;
 
     QStringList column_name;
     column_name << "Class" << "No" << "Color" << "";
@@ -638,16 +649,17 @@ void MainWindow::init()
 
     _class_file_path = file_read(_class_config_file);
     _img_dir_path = file_read(_img_dir_config_file);
-    if(_class_file_path != "")
+    if(_class_file_path != "ERROR")
     {
         btn_set_class_clicked();
-        init_parameter.is_first_set_class = false;
     }
-    if(_img_dir_path != "")
+    std::cout << _img_dir_path << std::endl;
+    if(_img_dir_path != "ERROR")
     {
         btn_img_dir_clicked();
-        init_parameter.is_first_set_dir = false;
     }
+    init_parameter.is_first_set_class = false;
+    init_parameter.is_first_set_dir = false;
 }
 
 void MainWindow::check_is_init()
@@ -824,7 +836,11 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         
         canvas.changeID(id);
         canvas._mouse_is_pressed = true;
-        canvas.draw(e, size);
+
+        if(init_parameter.is_fill_color_mode)
+            canvas.fill_color(size);
+        else
+            canvas.draw(e, size);
 
         std::vector<int>::iterator it = std::find(canvas._effective_id.begin(), canvas._effective_id.end(), id);
         if (it == canvas._effective_id.end())
@@ -836,7 +852,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {
-    if (!init_parameter.is_init)
+    if (!init_parameter.is_init || init_parameter.is_fill_color_mode)
         return;
 
     canvas._mouse_pos.setX(e->x());

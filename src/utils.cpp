@@ -208,7 +208,6 @@ std::string file_read(std::string file_path)
     std::cout << file_path << std::endl;
     if(access(file_path.data(), F_OK) == -1)
     {
-        std::cout << "test" << std::endl;
         return "";
     }
     std::string line;
@@ -218,6 +217,9 @@ std::string file_read(std::string file_path)
         getline(openFile, line);
     }
     openFile.close();
+
+    if(access(line.data(), F_OK) == -1)
+        return "ERROR";
 
     return line;
 }
