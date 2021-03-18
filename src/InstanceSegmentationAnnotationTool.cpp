@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBox_manual_mask,       SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
     connect(ui->checkBox_watershed_mask,    SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
     connect(ui->checkBox_drawmode,          SIGNAL(clicked()),              this,   SLOT(change_visualize_mode()));
-//connect(ui->checkBox_fill_color_mode,   SIGNAL(clicked()),              this,   SLOT(change_fill_color_mode()));
+    connect(ui->checkBox_fill_color_mode,   SIGNAL(clicked()),              this,   SLOT(change_fill_color_mode()));
     connect(ui->pushButton_plus,            SIGNAL(clicked()),              this,   SLOT(btn_plus_clicked()));
     connect(ui->pushButton_minus,           SIGNAL(clicked()),              this,   SLOT(btn_minus_clicked()));
     connect(ui->hsv_set_button,             SIGNAL(clicked()),              this,   SLOT(hsv_set_clicked()));
@@ -333,13 +333,13 @@ void  MainWindow::change_visualize_mode()
     update_img();
 }
 
-//void MainWindow::change_fill_color_mode()
-//{
-//    if(ui->checkBox_fill_color_mode->isChecked())
-//        init_parameter.is_fill_color_mode = true;
-//    else
-//        init_parameter.is_fill_color_mode = false;
-//}
+void MainWindow::change_fill_color_mode()
+{
+    if(ui->checkBox_fill_color_mode->isChecked())
+        init_parameter.is_fill_color_mode = true;
+    else
+        init_parameter.is_fill_color_mode = false;
+}
 
 void MainWindow::btn_plus_clicked()
 {
