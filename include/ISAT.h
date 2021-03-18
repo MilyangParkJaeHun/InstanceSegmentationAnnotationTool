@@ -86,6 +86,6 @@ public:
     void draw_hsv_mask();
     void resetImage();
     std::map<std::string, int> load_hsv(std::string class_name);
-    void save_hsv(std::string class_name);
+    void set_hsv(std::string class_name);
     void clear_hsv();
 };

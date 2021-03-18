@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1944</width>
-    <height>1193</height>
+    <width>1662</width>
+    <height>1101</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -79,9 +79,6 @@ border-color: rgb(208, 206, 206);</string>
          <weight>75</weight>
          <bold>true</bold>
         </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>CrossCursor</cursorShape>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color : rgb(231, 230, 230);color : rgb(0, 0, 0);
@@ -233,11 +230,11 @@ border-color: rgb(208, 206, 206);</string>
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>1424</x>
-      <y>16</y>
+      <x>1423</x>
+      <y>15</y>
       <width>323</width>
       <height>941</height>
      </rect>
@@ -344,7 +341,7 @@ border-color: rgb(208, 206, 206);</string>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
        <item>
         <widget class="QLabel" name="label_3">
          <property name="font">
@@ -380,25 +377,6 @@ border-color: rgb(208, 206, 206);</string>
          </property>
          <property name="text">
           <string>manual</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkBox_fill_color_mode">
-         <property name="font">
-          <font>
-           <family>Times New Roman</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color : rgb(231, 230, 230);color : rgb(0, 0, 0);
-border-color: rgb(208, 206, 206);</string>
-         </property>
-         <property name="text">
-          <string>fill color</string>
          </property>
         </widget>
        </item>
@@ -844,8 +822,8 @@ border-color: rgb(208, 206, 206);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1944</width>
-     <height>22</height>
+     <width>1662</width>
+     <height>20</height>
     </rect>
    </property>
   </widget>

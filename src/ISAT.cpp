@@ -688,7 +688,7 @@ std::map<std::string, int> ISAT::load_hsv(std::string class_name)
     return _hsv_storage[class_name];
 }
 
-void ISAT::save_hsv(std::string class_name)
+void ISAT::set_hsv(std::string class_name)
 {
     _hsv_storage[class_name] = _hsv_filter;
 }

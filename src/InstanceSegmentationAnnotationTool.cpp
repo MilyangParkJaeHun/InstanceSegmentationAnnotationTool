@@ -510,7 +510,7 @@ void MainWindow::hsv_set_clicked()
 {
     canvas.resetImage();
     canvas.draw_hsv_mask();
-    canvas.save_hsv(get_class_name());
+    canvas.set_hsv(get_class_name());
     update_img();
 }
 
